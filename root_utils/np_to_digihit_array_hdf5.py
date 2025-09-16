@@ -167,9 +167,10 @@ if __name__ == '__main__':
             gammas_above_threshold = gamma_tracks & (end_energy_estimate > 2)
             above_threshold = muons_above_threshold | electrons_above_threshold | gammas_above_threshold
             dset_veto2[offset+i] = np.any(above_threshold & outside_tank)
-            muons_exit_above_threshold = [np.any((t == 1) & (k > 166)) for t, k in zip(types[muon_tracks], kes[muon_tracks])]
-            electrons_exit_above_threshold = [np.any((t == 1) & (k > 2)) for t, k in zip(types[electron_tracks], kes[electron_tracks])]
-            gammas_exit_above_threshold = [np.any((t == 1) & (k > 2)) for t, k in zip(types[gamma_tracks], kes[gamma_tracks])]
+            # Since WCSim v1.12.14, boundary type kBlackSheet=1, kMPMT=2, kTyvel=3, kCave=4
+            muons_exit_above_threshold = [np.any((np.isin(t, [1, 2])) & (k > 166)) for t, k in zip(types[muon_tracks], kes[muon_tracks])]
+            electrons_exit_above_threshold = [np.any((np.isin(t, [1, 2])) & (k > 2)) for t, k in zip(types[electron_tracks], kes[electron_tracks])]
+            gammas_exit_above_threshold = [np.any((np.isin(t, [1, 2])) & (k > 2)) for t, k in zip(types[gamma_tracks], kes[gamma_tracks])]
             dset_fully_contained[offset+i] = not (np.any(muons_exit_above_threshold) or np.any(electrons_exit_above_threshold) or np.any(gammas_exit_above_threshold))
 
         for i, (trigs, times, charges, pmts) in enumerate(zip(hit_triggers, hit_times, hit_charges, hit_pmts)):
